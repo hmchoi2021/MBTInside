@@ -1,9 +1,12 @@
 package com.mbti.mindpairing.api.login.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mbti.mindpairing.api.common.constant.CommonCode;
 import com.mbti.mindpairing.api.common.dto.ApiResponse;
 import com.mbti.mindpairing.api.common.exception.MBTIException;
+import com.mbti.mindpairing.api.login.dto.KakaoUser;
 import com.mbti.mindpairing.api.login.dto.User;
+import com.mbti.mindpairing.api.login.entity.UserEntity;
 import com.mbti.mindpairing.api.login.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,9 +34,10 @@ public class LoginController {
     @ResponseBody
     @GetMapping("/v1/terms")
     public ApiResponse<List<User.TermsInfoResponse>> v1TermsGet(
-            HttpServletRequest request
-    ) {
-        return new ApiResponse<List<User.TermsInfoResponse>>(CommonCode.SUCCESS, loginService.getTermsInfo());
+            HttpServletRequest request,
+            @RequestParam("application_id") String applicationId
+    ) throws MBTIException {
+        return new ApiResponse<List<User.TermsInfoResponse>>(CommonCode.SUCCESS, loginService.getTermsInfo(applicationId));
     }
 
     @Operation(summary = "닉네임 중복 조회", description = "닉네임 중복 조회")
@@ -41,9 +45,10 @@ public class LoginController {
     @RequestMapping(value = "/v1/nickname/{nickname}", method = RequestMethod.GET)
     public ApiResponse<User.NicknameCheckResponse> v1NicknameCheckGet(
             HttpServletRequest request,
+            @RequestParam("application_id") String applicationId,
             @Parameter(name = "nickname", example = "testname", required = true)
-            @PathVariable(value = "nickname") String nickname) {
-        User.NicknameCheckResponse nicknameCheckResponse = loginService.checkNickname(nickname);
+            @PathVariable(value = "nickname") String nickname) throws MBTIException {
+        User.NicknameCheckResponse nicknameCheckResponse = loginService.checkNickname(applicationId, nickname);
         return new ApiResponse<User.NicknameCheckResponse>(CommonCode.SUCCESS, nicknameCheckResponse);
     }
 
@@ -52,8 +57,9 @@ public class LoginController {
     @PostMapping("/v1/auth")
     public ApiResponse<User.PhoneAuthResponse> v1AuthPhonePost(
             HttpServletRequest request,
+            @RequestParam("application_id") String applicationId,
             @RequestBody User.PhoneAuthRequest body) throws MBTIException {
-        return new ApiResponse<User.PhoneAuthResponse>(CommonCode.SUCCESS, loginService.authenticatePhoneNo(body));
+        return new ApiResponse<User.PhoneAuthResponse>(CommonCode.SUCCESS, loginService.authenticatePhoneNo(applicationId, body));
     }
 
     @Operation(summary = "휴대폰 번호 인증 검증", description = "휴대폰 번호 인증 결과 전달")
@@ -61,8 +67,9 @@ public class LoginController {
     @PostMapping("/v1/auth/verification")
     public ApiResponse<User.PhoneAuthResponse> v1AuthPhoneVerificationPost(
             HttpServletRequest request,
+            @RequestParam("application_id") String applicationId,
             @RequestBody User.PhoneAuthVerificationRequest body) throws MBTIException {
-        return new ApiResponse<User.PhoneAuthResponse>(CommonCode.SUCCESS, loginService.authPhoneVerification(body));
+        return new ApiResponse<User.PhoneAuthResponse>(CommonCode.SUCCESS, loginService.authPhoneVerification(applicationId, body));
     }
 
 
@@ -71,24 +78,27 @@ public class LoginController {
     @PostMapping("/v1/registration")
     public ApiResponse<User.RegisterUserResponse> v1RegistrationPost(
             HttpServletRequest request,
+            @RequestParam("application_id") String applicationId,
             @RequestBody User.RegisterUserRequest body) throws Exception {
-        return new ApiResponse<User.RegisterUserResponse>(CommonCode.SUCCESS, loginService.registerUser(body));
+        return new ApiResponse<User.RegisterUserResponse>(CommonCode.SUCCESS, loginService.registerUser(applicationId, body));
     }
 
     @Operation(summary = "MBTI List 조회", description = "[기본] 회원 가입시 mbti 리스트 조회")
     @ResponseBody
-    @PostMapping("/v1/mbti")
+    @GetMapping("/v1/mbti")
     public ApiResponse<User.MbtiListResponse> v1MbtiListGet(
+            @RequestParam("application_id") String applicationId,
             HttpServletRequest request) throws Exception {
-        return new ApiResponse<User.MbtiListResponse>(CommonCode.SUCCESS, loginService.getMbtiList());
+        return new ApiResponse<User.MbtiListResponse>(CommonCode.SUCCESS, loginService.getMbtiList(applicationId));
     }
 
     @Operation(summary = "관심사 List 조회", description = "[기본] 회원 가입시 관심사 리스트 조회")
     @ResponseBody
-    @PostMapping("/v1/interesting")
+    @GetMapping("/v1/interesting")
     public ApiResponse<User.InterestingListResponse> v1InterestingListGet(
-            HttpServletRequest request) throws Exception {
-        return new ApiResponse<User.InterestingListResponse>(CommonCode.SUCCESS, loginService.getInterestingList());
+            @RequestParam("application_id") String applicationId,
+            HttpServletRequest request){
+        return new ApiResponse<User.InterestingListResponse>(CommonCode.SUCCESS, loginService.getInterestingList(applicationId));
     }
 
 //    @Operation(summary = "Naver Test", description = "[네이버] 회원 가입")
@@ -112,10 +122,39 @@ public class LoginController {
     @Operation(summary = "Kakao Login Test", description = "[카카오] 로그인")
     @ResponseBody
     @RequestMapping(value = "/v1/login/kakao", method = RequestMethod.GET)
-    public ApiResponse<String> v1LoginUsingKakaoGET(
+    public ApiResponse<KakaoUser.kakaoLoginResponse> v1KakaoLoginGET(
             HttpServletRequest request,
-            @RequestParam("code") String code) throws MBTIException {
-            System.err.println("code : " + code);
-        return new ApiResponse<String>(CommonCode.SUCCESS, loginService.loginUsingKakaoUser(code));
+            @RequestParam("application_id") String applicationId,
+            @RequestParam("code") String code) throws JsonProcessingException {
+        return new ApiResponse<KakaoUser.kakaoLoginResponse>(CommonCode.SUCCESS, loginService.loginUsingKakaoUser(request, applicationId, code));
+    }
+
+    @Operation(summary = "Login", description = "[일반] 휴대폰 로그인, 성공 시 리턴값은 sessioId")
+    @ResponseBody
+    @RequestMapping(value = "/v1/login/phone", method = RequestMethod.POST)
+    public ApiResponse<User.PhoneLoginResonse> v1PhoneLoginPOST(
+            HttpServletRequest request,
+            @RequestParam("application_id") String applicationId,
+            @RequestBody User.PhoneAuthVerificationRequest body) throws MBTIException {
+        return new ApiResponse<User.PhoneLoginResonse>(CommonCode.SUCCESS, loginService.loginUsingPhoneUser(request, applicationId, body));
+    }
+
+    @Operation(summary = "Loginout", description = "[일반] 휴대폰 로그아웃")
+    @ResponseBody
+    @RequestMapping(value = "/v1/logout/phone", method = RequestMethod.POST)
+    public ApiResponse<User.PhoneLoginResonse> v1PhoneLogoutPOST(
+            HttpServletRequest request,
+            @RequestParam("application_id") String applicationId) throws MBTIException {
+        return new ApiResponse<User.PhoneLoginResonse>(CommonCode.SUCCESS, loginService.logoutUsingPhoneUser(request, applicationId));
+    }
+
+
+    @Operation(summary = "[TEST용] 등록된 유저 조회", description = "[TEST용] 등록된 유저 조회(실제사용 X)")
+    @ResponseBody
+    @GetMapping("/v1/userInfo")
+    public ApiResponse<List<UserEntity>> v1UsersGet(
+            HttpServletRequest request
+    ){
+        return new ApiResponse<List<UserEntity>>(CommonCode.SUCCESS, loginService.getUserInfo());
     }
 }

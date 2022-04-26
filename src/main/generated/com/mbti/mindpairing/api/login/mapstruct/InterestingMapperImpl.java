@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-03-27T16:01:27+0900",
+    date = "2022-04-27T02:11:51+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.10 (Azul Systems, Inc.)"
 )
 public class InterestingMapperImpl implements InterestingMapper {

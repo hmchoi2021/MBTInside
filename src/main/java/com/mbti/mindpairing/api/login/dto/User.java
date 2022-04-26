@@ -18,6 +18,10 @@ public class User {
         REGISTERED, DELETED, BLACKLIST
     }
 
+    public enum LoginStatus {
+        REGISTERED, LOGIN, LOGOUT, NEED_AGREEMENT, NOT_EXISTS_PHONE_NO, NOT_VALID_APPLICATION, NOT_REGISTERED
+    }
+
     @Getter
     @Setter
     @ToString
@@ -47,6 +51,9 @@ public class User {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PhoneAuthRequest {
+        @Schema(description = "이름", defaultValue = "홍길동", nullable = false)
+        private String name;
+
         @Schema(description = "통신사", defaultValue = "SKT", nullable = false)
         private String provider;
 
@@ -216,5 +223,18 @@ public class User {
         private List<Mbti> mbtiList;
 
         private List<Interesting> interestingList;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PhoneLoginResonse {
+        @Schema(description = "로그인 상태", defaultValue = "LOGINED", nullable = false)
+        private LoginStatus status;
+
+        @Schema(description = "sessionId", defaultValue = "zz0101xx-bab9-4b92-9b32-dadb280f4b61")
+        private String sessionId;
     }
 }

@@ -29,7 +29,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     @Override
     public UserEntity findUserByPhoneNumber(String phone) {
         return queryFactory.selectFrom(userEntity)
-                .where(userEntity.phone.eq(phone))
+                .where(userEntity.phone.eq(phone), userEntity.deleteTime.isNull())
                 .orderBy(userEntity.id.desc())
                 .fetchFirst();
     }
