@@ -124,9 +124,8 @@ public class LoginController {
     @RequestMapping(value = "/v1/login/kakao", method = RequestMethod.GET)
     public ApiResponse<KakaoUser.kakaoLoginResponse> v1KakaoLoginGET(
             HttpServletRequest request,
-            @RequestParam("application_id") String applicationId,
             @RequestParam("code") String code) throws JsonProcessingException {
-        return new ApiResponse<KakaoUser.kakaoLoginResponse>(CommonCode.SUCCESS, loginService.loginUsingKakaoUser(request, applicationId, code));
+        return new ApiResponse<KakaoUser.kakaoLoginResponse>(CommonCode.SUCCESS, loginService.loginUsingKakaoUser(request, code));
     }
 
     @Operation(summary = "Login", description = "[일반] 휴대폰 로그인, 성공 시 리턴값은 sessioId")
@@ -156,5 +155,14 @@ public class LoginController {
             HttpServletRequest request
     ){
         return new ApiResponse<List<UserEntity>>(CommonCode.SUCCESS, loginService.getUserInfo());
+    }
+
+    @Operation(summary = "[TEST용] 세션확인", description = "[TEST용] 유저 확인")
+    @ResponseBody
+    @GetMapping("/v1/getSession")
+    public ApiResponse<Long> v1SessionGet(
+            HttpServletRequest request
+    ){
+        return new ApiResponse<Long>(CommonCode.SUCCESS, loginService.getSession(request));
     }
 }

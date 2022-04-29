@@ -203,26 +203,32 @@ public class LoginService {
         return response.getBody();
     }
 
-    public KakaoUser.kakaoLoginResponse loginUsingKakaoUser(HttpServletRequest request, String applicationId, String code) throws JsonProcessingException {
+    @Transactional
+    public KakaoUser.kakaoLoginResponse loginUsingKakaoUser(HttpServletRequest request, String code) throws JsonProcessingException {
         KakaoUser.getAccessTokenResponse getAccessTokenResponse = kakaoAdmin.kakaoGetAccessTokenResponse(code);
         Map<String, Object> accountMap = kakaoAdmin.returnAccountMap(getAccessTokenResponse.getAccess_token());
         KakaoUser.kakaoLoginResponse response = new KakaoUser.kakaoLoginResponse();
 
-        boolean ena  = (boolean) accountMap.get("email_needs_agreement");
-        boolean arna = (boolean) accountMap.get("age_range_needs_agreement");
-        boolean bna  = (boolean) accountMap.get("birthday_needs_agreement");
-        boolean gna  = (boolean) accountMap.get("gender_needs_agreement");
+        boolean ena  = accountMap.get("email_needs_agreement").equals("true") ? true : false;
+        boolean arna = accountMap.get("age_range_needs_agreement").equals("true") ? true : false;
+        boolean bna  = accountMap.get("birthday_needs_agreement").equals("true") ? true : false;
+        boolean gna  = accountMap.get("gender_needs_agreement").equals("true") ? true : false;
+
         if(!(ena && arna && bna && gna)) {
-            UserEntity user = userRepository.findUserByPhoneNumber("");
+            String phone = "010" + (int) (Math.random() * 100_000_00);
+            UserEntity user = userRepository.findUserByPhoneNumber(phone);
             if(user == null) {
+                String name = ((Map<String, String>) accountMap.get("profile")).get("nickname");
+                String gender = accountMap.get("gender").equals("male") ? "M" : "F";
+
                 user = new UserEntity(null,
+                        name,
                         null,
                         null,
+                        gender,
+                        phone,
                         null,
-                        (String) accountMap.get("gender_needs_agreement"),
-                        (String) accountMap.get("gender_needs_agreement"),
-                        null,
-                        null,
+                        User.UserStatus.REGISTERED,
                         null,
                         null,
                         Role.USER);
@@ -274,5 +280,11 @@ public class LoginService {
 
     public List<UserEntity> getUserInfo() {
         return userRepository.findAll();
+    }
+
+    public Long getSession(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(true);
+        return (Long) httpSession.getAttribute(LOGIN_USER);
+
     }
 }

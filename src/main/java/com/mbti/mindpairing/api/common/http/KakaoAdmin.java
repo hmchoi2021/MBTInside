@@ -29,7 +29,8 @@ public class KakaoAdmin {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
         map.add("client_id", "96cdbc5044b9b9866c31f0792de1c20a");
-        map.add("redirenct_uri", "http://http://ec2-3-35-99-11.ap-northeast-2.compute.amazonaws.com/v1/login/kakao");
+        map.add("redirenct_uri", "http://http://ec2-3-35-99-11.ap-northeast-2.compute.amazonaws.com:9001/v1/login/kakao");
+//        map.add("redirenct_uri", "http://localhost:9001/v1/login/kakao");
         map.add("code", code);
         HttpEntity<MultiValueMap<String, String>> request
                 = new HttpEntity<>(map, headers);
@@ -56,7 +57,6 @@ public class KakaoAdmin {
                 request,
                 String.class
         );
-
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Map<String, Object>> responseMap = mapper.readValue(response.getBody(), Map.class);
 
