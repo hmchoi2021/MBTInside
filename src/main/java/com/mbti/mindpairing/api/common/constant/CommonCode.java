@@ -18,8 +18,11 @@ public enum CommonCode {
     PHONE_IS_DUPLICATED(400, "register-004", "The phone number is duplicated"),
     User_Is_A_BlackList(400, "register-005", "The user with the phone number is a black list"),
     PHONE_IS_NOT_REGISTERD(400, "register-006", "The phone number is not registered"),
+    USER_IS_NOT_EXISTED(400, "register-007", "The user is not existed"),
     // Login Related Code
-    ALREADY_LOGINED(400, "login-001", "The user is already logined");
+    ALREADY_LOGINED(400, "login-001", "The user is already logined"),
+    NOT_LOGINED(400, "login-002", "The user is not logined"),
+    USER_IS_NOT_VALID(400, "login-003", "The user's id or password is not valid");
 
 
     private final int status;
