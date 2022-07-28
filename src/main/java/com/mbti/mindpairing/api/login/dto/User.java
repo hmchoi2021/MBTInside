@@ -1,5 +1,6 @@
 package com.mbti.mindpairing.api.login.dto;
 
+import com.mbti.mindpairing.api.login.entity.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -237,4 +238,24 @@ public class User {
         @Schema(description = "sessionId", defaultValue = "zz0101xx-bab9-4b92-9b32-dadb280f4b61")
         private String sessionId;
     }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserInfoList {
+        @Schema(description = "로그인 상태", defaultValue = "LOGINED", nullable = false)
+        private List<UserEntity> userEntitiesList;
+
+        @Schema(description = "total", defaultValue = "1")
+        private Integer total;
+
+        @Schema(description = "pageNo", defaultValue = "1")
+        private Integer pageNo;
+
+        @Schema(description = "pageSize", defaultValue = "10")
+        private Integer pageSize;
+    }
+
 }

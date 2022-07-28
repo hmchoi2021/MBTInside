@@ -62,4 +62,18 @@ public class AdminController {
         if(pageSize == null) pageSize = 10;
         return new ApiResponse<Admin.UserInfoList>(CommonCode.SUCCESS, adminService.getUserInfoList(request, nickname, mbti, blackList, male, female, notConnected, accountWithdrawal, pageNo, pageSize));
     }
+
+    @Operation(summary = "회원검색 api", description = "[Admin] 회원 검색")
+    @ResponseBody
+    @GetMapping("/v1/admin/user/infos")
+    public ApiResponse<User.UserInfoList> v1userInfosListPost(
+            HttpServletRequest request,
+            @RequestParam(value = "nickname", required = false) String nickname,
+            @RequestParam(value = "pageNo", required = false) Integer pageNo,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws MBTIException {
+
+        if(pageNo == null) pageNo = 0;
+        if(pageSize == null) pageSize = 10;
+        return new ApiResponse<User.UserInfoList>(CommonCode.SUCCESS, adminService.getUserList(request, nickname, pageNo, pageSize));
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /*
@@ -126,6 +127,23 @@ public class LoginController {
             HttpServletRequest request,
             @RequestParam("code") String code) throws JsonProcessingException {
         return new ApiResponse<KakaoUser.kakaoLoginResponse>(CommonCode.SUCCESS, loginService.loginUsingKakaoUser(request, code));
+    }
+
+    @Operation(summary = "Naver Login Test", description = "[네이버] 로그인")
+    @ResponseBody
+    @RequestMapping(value = "/v1/login/naver", method = RequestMethod.GET)
+    public ApiResponse<String> v1NaverLoginGET(
+            HttpServletRequest request) throws UnsupportedEncodingException {
+        return new ApiResponse<String>(CommonCode.SUCCESS, loginService.loginUsingNaverUser(null));
+    }
+
+    @Operation(summary = "Naver Login Callback", description = "[네이버] 로그인 callback")
+    @ResponseBody
+    @RequestMapping(value = "/v1/login/naver/callback", method = RequestMethod.GET)
+    public ApiResponse<String> v1NaverLoginCallbackGET(
+            HttpServletRequest request,
+            @RequestParam("code") String code) throws UnsupportedEncodingException {
+        return new ApiResponse<String>(CommonCode.SUCCESS, loginService.loginUsingNaverCallbackUser(request, code));
     }
 
     @Operation(summary = "Login", description = "[일반] 휴대폰 로그인, 성공 시 리턴값은 sessioId")

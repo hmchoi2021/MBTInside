@@ -6,7 +6,9 @@ import com.mbti.mindpairing.api.admin.repository.LoginRepository;
 import com.mbti.mindpairing.api.common.constant.CommonCode;
 import com.mbti.mindpairing.api.common.exception.MBTIException;
 import com.mbti.mindpairing.api.login.dto.User;
+import com.mbti.mindpairing.api.login.entity.UserEntity;
 import com.mbti.mindpairing.api.login.repository.MbtiRepository;
+import com.mbti.mindpairing.api.login.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.mbti.mindpairing.api.login.service.LoginService.LOGIN_USER;
 
 @Service
 public class AdminService {
 
     @Autowired
     private LoginRepository loginRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private MbtiRepository mbtiRepository;
@@ -115,5 +123,35 @@ public class AdminService {
             }
         }
         return new Admin.UserInfoList(userInfos, 30L, 100L, 32L, 30L, pageSize, pageNo);
+    }
+
+    public User.UserInfoList getUserList(HttpServletRequest request, String nickname, Integer pageNo, Integer pageSize) throws MBTIException {
+        HttpSession session = request.getSession(false);
+        if(session == null) throw new MBTIException(CommonCode.NOT_LOGINED);
+
+//        Long id = (Long) session.getAttribute(LOGIN_USER);
+//        System.err.println(id);
+//        Optional<AdminUserEntity> userEntity = loginRepository.findById(id);
+//        if(!userEntity.isPresent()) {
+//            throw new MBTIException(CommonCode.USER_IS_NOT_EXISTED);
+//        }
+
+        User.UserInfoList userInfoList = null;
+        if(nickname == null) {
+            if(pageSize > 0) {
+                int fetchCount = userRepository.countActiveUser();
+                int total = fetchCount > 0 ? fetchCount / pageSize : 0;
+                total += fetchCount % pageSize > 0 ? 1 : 0;
+                List<UserEntity> userEntities = userRepository.findAllUser(pageNo, pageSize);
+                userInfoList = new User.UserInfoList(userEntities, total, pageNo, pageSize);
+            }
+        }else {
+            UserEntity user = userRepository.findByNickName(nickname);
+            List<UserEntity> userEntities = new ArrayList<>();
+            userEntities.add(user);
+            userInfoList = new User.UserInfoList(userEntities, 0, pageNo, pageSize);
+        }
+
+        return userInfoList;
     }
 }

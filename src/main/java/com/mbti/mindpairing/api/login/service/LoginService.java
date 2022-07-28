@@ -20,6 +20,10 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +31,7 @@ import java.util.Map;
 @Service
 public class LoginService {
 
-    private static final String LOGIN_USER = "LOGIN_USER";
+    public static final String LOGIN_USER = "LOGIN_USER";
 
     @Autowired
     private UserRepository userRepository;
@@ -182,27 +186,45 @@ public class LoginService {
         return null;
     }
 
-    public String registerUsingNaverUser(User.RegisterUserRequest body) {
+    public String loginUsingNaverUser(User.RegisterUserRequest body) throws UnsupportedEncodingException {
+        String clientId = "IUKkdY3nqc4D_rM0VCAV";//애플리케이션 클라이언트 아이디값";
+        String redirectURI = "http://localhost:9001/v1/login/naver/callback";
+        SecureRandom random = new SecureRandom();
+        String state = new BigInteger(130, random).toString();
+        String apiURL = "https://nid.naver.com/oauth2.0/authorize?response_type=code";
+        apiURL += "&client_id=" + clientId;
+        apiURL += "&redirect_uri=" + redirectURI;
+        apiURL += "&state=" + state;
+
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://nid.naver.com/oauth2.0/authorize";
         HttpHeaders headers = new HttpHeaders();
-        headers.set("response_type", "code");
-        headers.set("client_id", "IUKkdY3nqc4D_rM0VCAV");
-        headers.set("redirect_uri", "http://127.0.0.1:9001");
-        headers.set("state", "state_sample");
         HttpEntity request = new HttpEntity(headers);
-
         ResponseEntity<String> response = null;
-
         response = restTemplate.exchange(
-                url,
+                apiURL,
                 HttpMethod.GET,
                 request,
                 String.class
         );
+        System.err.println(response.getBody());
         return response.getBody();
     }
 
+    public String loginUsingNaverCallbackUser(HttpServletRequest request, String code) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiURL = "https://nid.naver.com";
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity req = new HttpEntity(headers);
+        ResponseEntity<String> response = null;
+        response = restTemplate.exchange(
+                apiURL,
+                HttpMethod.GET,
+                req,
+                String.class
+        );
+        System.err.println(response.getBody());
+        return response.getBody();
+    }
     @Transactional
     public KakaoUser.kakaoLoginResponse loginUsingKakaoUser(HttpServletRequest request, String code) throws JsonProcessingException {
         KakaoUser.getAccessTokenResponse getAccessTokenResponse = kakaoAdmin.kakaoGetAccessTokenResponse(code);
