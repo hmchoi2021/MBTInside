@@ -318,7 +318,7 @@ public class LoginService {
 //        Long userId = (Long) session.getAttribute(LOGIN_USER);
         Long userId = 0L;
         Map<Integer, Integer> testResultMap = evaluateRequest.getTestResultMap();
-
+        System.err.println(testResultMap.size());
         if(testResultMap.size() != 20) {
             throw new MBTIException(CommonCode.USER_TEST_LIST_SIZE_INVALIDATED);
         }

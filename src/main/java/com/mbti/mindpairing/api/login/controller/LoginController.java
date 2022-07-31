@@ -185,14 +185,14 @@ public class LoginController {
         return new ApiResponse<Long>(CommonCode.SUCCESS, loginService.getSession(request));
     }
 
-    @Operation(summary = "[TEST용] 등록된 유저 조회", description = "[TEST용] 등록된 유저 조회(실제사용 X)")
+    @Operation(summary = "[TEST용] MBTI test 점수 매기는용도 api", description = "[TEST용] MBTI test 점수 매기기")
     @ResponseBody
-    @GetMapping("/v1/ragistration/mbti-test")
+    @PostMapping("/v1/ragistration/mbti-test")
     public ApiResponse<User.UserMBTITestEvaluateResponse> v1UsersMBTIGet(
             HttpServletRequest request,
-            @RequestParam("test_request") User.UserMBTITestEvaluateRequest testRequest
+            @RequestBody User.UserMBTITestEvaluateRequest body
     ) throws MBTIException {
         return new ApiResponse<User.UserMBTITestEvaluateResponse>(CommonCode.SUCCESS,
-                loginService.getRegistMBTIInfo(testRequest));
+                loginService.getRegistMBTIInfo(body));
     }
 }
