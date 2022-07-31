@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-07-23T14:28:34+0900",
+    date = "2022-07-31T20:45:50+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.10 (Azul Systems, Inc.)"
 )
 public class TermsInfoMapperImpl implements TermsInfoMapper {

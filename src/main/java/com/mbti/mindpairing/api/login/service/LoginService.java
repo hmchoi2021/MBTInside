@@ -22,9 +22,9 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -308,5 +308,88 @@ public class LoginService {
         HttpSession httpSession = request.getSession(true);
         return (Long) httpSession.getAttribute(LOGIN_USER);
 
+    }
+
+    public User.UserMBTITestEvaluateResponse getRegistMBTIInfo(
+//            HttpServletRequest request,
+                                                               User.UserMBTITestEvaluateRequest evaluateRequest) throws MBTIException {
+//        if(false) throw new MBTIException(CommonCode.APPLICATION_VERSION_IS_NOT_VALID);
+//        HttpSession session = request.getSession(false);
+//        Long userId = (Long) session.getAttribute(LOGIN_USER);
+        Long userId = 0L;
+        Map<Integer, Integer> testResultMap = evaluateRequest.getTestResultMap();
+
+        if(testResultMap.size() != 20) {
+            throw new MBTIException(CommonCode.USER_TEST_LIST_SIZE_INVALIDATED);
+        }
+
+        String mbti = testScoreCalculator(testResultMap);
+
+//        UserEntity user = userRepository.getById(userId);
+//        user.setMbti(mbti);
+        return new User.UserMBTITestEvaluateResponse(userId, mbti);
+    }
+
+    private String testScoreCalculator(Map<Integer, Integer> scoreMap) {
+        int A_type_score = 0;
+        int B_type_score = 0;
+        int C_type_score = 0;
+        int D_type_score = 0;
+
+        String mbti = "";
+
+        List<Integer> increasing_score_lsit = Arrays.asList(1, 6, 7, 8, 10, 12, 13, 14, 17, 18, 20);
+        List<Integer> decreasing_score_list = Arrays.asList(2, 3, 4, 5, 9, 11, 15, 16, 19);
+        List<Integer> A_type = Arrays.asList(1, 5, 9, 14, 17);
+        List<Integer> B_type = Arrays.asList(2, 7, 11, 13, 16, 19);
+        List<Integer> C_type = Arrays.asList(3, 6, 10, 15, 18);
+        List<Integer> D_type = Arrays.asList(4, 8, 12, 20);
+
+        for(Integer key : scoreMap.keySet()) {
+            Integer selection = scoreMap.get(key);
+            if(increasing_score_lsit.contains(key)) {
+//                if(selection == 0) score += 4; if(selection == 1) score += 3;
+//                if(selection == 2) score += 1; if(selection == 3) score += 0;
+
+                if(A_type.contains(key)) A_type_score += selection;
+                if(B_type.contains(key)) B_type_score += selection;
+                if(C_type.contains(key)) C_type_score += selection;
+                if(D_type.contains(key)) D_type_score += selection;
+
+            }else if(decreasing_score_list.contains(key)) {
+//                if(selection == 0) score += 0; if(selection == 1) score += 1;
+//                if(selection == 2) score += 3; if(selection == 3) score += 4;
+
+                if(A_type.contains(key)) A_type_score += selection;
+                if(B_type.contains(key)) B_type_score += selection;
+                if(C_type.contains(key)) C_type_score += selection;
+                if(D_type.contains(key)) D_type_score += selection;
+            }
+        }
+
+        if(A_type_score >= 9) {
+            mbti += "E";
+        }else {
+            mbti += "I";
+        }
+
+        if(B_type_score >= 11) {
+            mbti += "N";
+        }else {
+            mbti += "S";
+        }
+
+        if(C_type_score >= 14) {
+            mbti += "F";
+        }else {
+            mbti += "T";
+        }
+
+        if(D_type_score >= 8) {
+            mbti += "J";
+        }else {
+            mbti += "P";
+        }
+        return mbti;
     }
 }

@@ -110,7 +110,7 @@ public class LoginController {
 //            @RequestBody User.RegisterUserRequest body) throws MBTIException {
 //        return new ApiResponse<String>(CommonCode.SUCCESS, loginService.registerUsingNaverUser(body));
 //    }
-
+//
 //    @Operation(summary = "Naver Test Redirect", description = "[네이버] 회원 가입")
 //    @ResponseBody
 //    @RequestMapping(value = "/v1/naver/redirect", method = RequestMethod.GET)
@@ -143,6 +143,7 @@ public class LoginController {
     public ApiResponse<String> v1NaverLoginCallbackGET(
             HttpServletRequest request,
             @RequestParam("code") String code) throws UnsupportedEncodingException {
+        System.err.println("호출되냐");
         return new ApiResponse<String>(CommonCode.SUCCESS, loginService.loginUsingNaverCallbackUser(request, code));
     }
 
@@ -182,5 +183,16 @@ public class LoginController {
             HttpServletRequest request
     ){
         return new ApiResponse<Long>(CommonCode.SUCCESS, loginService.getSession(request));
+    }
+
+    @Operation(summary = "[TEST용] 등록된 유저 조회", description = "[TEST용] 등록된 유저 조회(실제사용 X)")
+    @ResponseBody
+    @GetMapping("/v1/ragistration/mbti-test")
+    public ApiResponse<User.UserMBTITestEvaluateResponse> v1UsersMBTIGet(
+            HttpServletRequest request,
+            @RequestParam("test_request") User.UserMBTITestEvaluateRequest testRequest
+    ) throws MBTIException {
+        return new ApiResponse<User.UserMBTITestEvaluateResponse>(CommonCode.SUCCESS,
+                loginService.getRegistMBTIInfo(testRequest));
     }
 }

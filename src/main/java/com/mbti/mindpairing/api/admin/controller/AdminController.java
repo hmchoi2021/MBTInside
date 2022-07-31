@@ -76,4 +76,6 @@ public class AdminController {
         if(pageSize == null) pageSize = 10;
         return new ApiResponse<User.UserInfoList>(CommonCode.SUCCESS, adminService.getUserList(request, nickname, pageNo, pageSize));
     }
+
+
 }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class User {
 
@@ -258,4 +259,27 @@ public class User {
         private Integer pageSize;
     }
 
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserMBTITestEvaluateRequest {
+        @Schema(description = "test result Map", defaultValue = "{(1,2), (2,3), (3,2), ...}", nullable = false)
+        private Map<Integer, Integer> testResultMap;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserMBTITestEvaluateResponse {
+        @Schema(description = "사용자 Id", defaultValue = "1", nullable = false)
+        private Long userId;
+
+        @Schema(description = "MBTI", defaultValue = "ENTP", nullable = false)
+        private String mbti;
+
+    }
 }
