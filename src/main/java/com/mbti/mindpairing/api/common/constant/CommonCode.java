@@ -20,7 +20,7 @@ public enum CommonCode {
     PHONE_IS_NOT_REGISTERD(400, "register-006", "The phone number is not registered"),
     USER_IS_NOT_EXISTED(400, "register-007", "The user is not existed"),
     USER_TEST_LIST_SIZE_INVALIDATED(400, "register-008", "The user's test list length is not equal to 20"),
-
+    USER_SCORE_IS_INVALID(400, "register-009", "The user's score is invalid. The score must in 1~4"),
     // Login Related Code
     ALREADY_LOGINED(400, "login-001", "The user is already logined"),
     NOT_LOGINED(400, "login-002", "The user is not logined"),

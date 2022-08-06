@@ -330,7 +330,7 @@ public class LoginService {
         return new User.UserMBTITestEvaluateResponse(userId, mbti);
     }
 
-    private String testScoreCalculator(Map<Integer, Integer> scoreMap) {
+    private String testScoreCalculator(Map<Integer, Integer> scoreMap) throws MBTIException {
         int A_type_score = 0;
         int B_type_score = 0;
         int C_type_score = 0;
@@ -338,8 +338,8 @@ public class LoginService {
 
         String mbti = "";
 
-        List<Integer> increasing_score_lsit = Arrays.asList(1, 6, 7, 8, 10, 12, 13, 14, 17, 18, 20);
-        List<Integer> decreasing_score_list = Arrays.asList(2, 3, 4, 5, 9, 11, 15, 16, 19);
+        List<Integer> decreasing_score_list = Arrays.asList(1, 6, 7, 8, 10, 12, 13, 14, 17, 18, 20);
+        List<Integer> increasing_score_lsit = Arrays.asList(2, 3, 4, 5, 9, 11, 15, 16, 19);
         List<Integer> A_type = Arrays.asList(1, 5, 9, 14, 17);
         List<Integer> B_type = Arrays.asList(2, 7, 11, 13, 16, 19);
         List<Integer> C_type = Arrays.asList(3, 6, 10, 15, 18);
@@ -347,23 +347,23 @@ public class LoginService {
 
         for(Integer key : scoreMap.keySet()) {
             Integer selection = scoreMap.get(key);
-            if(increasing_score_lsit.contains(key)) {
+            if(decreasing_score_list.contains(key)) {
 //                if(selection == 0) score += 4; if(selection == 1) score += 3;
 //                if(selection == 2) score += 1; if(selection == 3) score += 0;
 
-                if(A_type.contains(key)) A_type_score += selection;
-                if(B_type.contains(key)) B_type_score += selection;
-                if(C_type.contains(key)) C_type_score += selection;
-                if(D_type.contains(key)) D_type_score += selection;
+                if(A_type.contains(key)) A_type_score += decreasing_score(selection);
+                if(B_type.contains(key)) B_type_score += decreasing_score(selection);
+                if(C_type.contains(key)) C_type_score += decreasing_score(selection);
+                if(D_type.contains(key)) D_type_score += decreasing_score(selection);
 
-            }else if(decreasing_score_list.contains(key)) {
+            }else if(increasing_score_lsit.contains(key)) {
 //                if(selection == 0) score += 0; if(selection == 1) score += 1;
 //                if(selection == 2) score += 3; if(selection == 3) score += 4;
 
-                if(A_type.contains(key)) A_type_score += selection;
-                if(B_type.contains(key)) B_type_score += selection;
-                if(C_type.contains(key)) C_type_score += selection;
-                if(D_type.contains(key)) D_type_score += selection;
+                if(A_type.contains(key)) A_type_score += increasing_score(selection);
+                if(B_type.contains(key)) B_type_score += increasing_score(selection);
+                if(C_type.contains(key)) C_type_score += increasing_score(selection);
+                if(D_type.contains(key)) D_type_score += increasing_score(selection);
             }
         }
 
@@ -390,6 +390,26 @@ public class LoginService {
         }else {
             mbti += "P";
         }
+        System.err.println(A_type_score);
+        System.err.println(B_type_score);
+        System.err.println(C_type_score);
+        System.err.println(D_type_score);
         return mbti;
+    }
+
+    private int decreasing_score(int selection) throws MBTIException {
+        if(selection == 1) return 4;
+        if(selection == 2) return 3;
+        if(selection == 3) return 1;
+        if(selection == 4) return 0;
+        throw new MBTIException(CommonCode.USER_SCORE_IS_INVALID);
+    }
+
+    private int increasing_score(int selection) throws MBTIException {
+        if(selection == 1) return 0;
+        if(selection == 2) return 1;
+        if(selection == 3) return 3;
+        if(selection == 4) return 4;
+        throw new MBTIException(CommonCode.USER_SCORE_IS_INVALID);
     }
 }
