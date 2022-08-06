@@ -373,17 +373,18 @@ public class LoginService {
             mbti += "I";
         }
 
-        if(B_type_score >= 11) {
+        if(C_type_score >= 11) {
             mbti += "N";
         }else {
             mbti += "S";
         }
 
-        if(C_type_score >= 14) {
+        if(B_type_score >= 14) {
             mbti += "F";
         }else {
             mbti += "T";
         }
+
 
         if(D_type_score >= 8) {
             mbti += "J";
